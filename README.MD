@@ -28,5 +28,5 @@ Descanso Largo:
 
 **Marco Pretelín Vergara (MV Developer)**
 
-![imagen](assets/icons8-linkedin.svg)
+![imagen](imagenes/Logo%20MV%20Developer.svg)
  ## https://www.linkedin.com/in/marco-ariel-pretelin-vergara/
