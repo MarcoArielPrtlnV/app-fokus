@@ -1,0 +1,236 @@
+const d = document;
+
+
+/* Cambio de color en el background de la página */
+const html = d.querySelector('html');
+const btnEnfoque = d.querySelector('.app__card-button--enfoque');
+const btnCorto = d.querySelector('.app__card-button--corto');
+const btnLargo = d.querySelector('.app__card-button--largo');
+
+/* Cambio en la imagen de las secciones */
+const banner = d.querySelector('.app__image');
+
+/* Cambio de texto en las secciones */
+const appTitle = d.querySelector('.app__title');
+const appTitleStrong = d.querySelector('.app__title-strong');
+
+/* Botones de descanso */
+const appButton = d.querySelector('.app__card-button');
+const appButtonEnfoque = d.querySelector('.app__card-button--enfoque');
+const appButtonCorto = d.querySelector('.app__card-button--corto');
+const appButtonLargo = d.querySelector('.app__card-button--largo');
+
+/* Boton de reproducir música */
+const inputEnfoqueMusica = d.getElementById('alternar-musica');
+const musica = new Audio('./sonidos/luna-rise-part-one.mp3');
+
+/* Temporizador */
+let tiempoTranscurrido = 1500;
+let idIntervalo = null;
+const startPauseBtn = d.getElementById('start-pause');
+const audioPlay = new Audio('./sonidos/play.wav');
+const audioPausa = new Audio('./sonidos/pause.mp3');
+const audioStop = new Audio('./sonidos/beep.mp3');
+
+
+/* Cambiar texto al botón de iniciar temporizador */
+const textoInicioPausa = d.querySelector('#start-pause span');
+
+
+/* Cambiar imagen del boton play/pause */
+const playPauseImg = d.querySelector('.app__card-primary-butto-icon');
+
+
+/* Tiempo en pantalla */
+const timer = d.getElementById('timer');
+
+
+
+
+musica.loop = true;
+inputEnfoqueMusica.addEventListener('change', ()=> {
+
+    if (inputEnfoqueMusica.checked  /* musica.paused */) {
+
+
+        musica.play();
+
+
+    } else { 
+        
+        musica.pause(); 
+
+    }
+
+});
+
+
+btnEnfoque.addEventListener('click', () => {
+
+    tiempoTranscurrido = 1500;
+    changeContexto('enfoque');
+
+
+
+});
+
+btnCorto.addEventListener('click', () => {
+
+    tiempoTranscurrido = 300;
+    changeContexto('descanso-corto');
+
+});
+
+
+btnLargo.addEventListener('click', () => {
+
+    tiempoTranscurrido = 900;
+    changeContexto('descanso-largo');
+
+});
+
+const changeContexto = (contexto) => {
+
+    /* Mostrar tiempo en pantalla */
+    tiempoEnPantalla();
+
+    /* Cambiar imagenes */
+
+    html.setAttribute('data-contexto', contexto);
+    banner.setAttribute('src', `imagenes/${contexto}.png`);
+
+
+
+    /* Cambiar texto */
+    switch (contexto) {
+
+        case 'enfoque': {
+
+
+            appTitle.innerHTML = `
+
+        <h1 class="app__title">
+            Optimiza tu productividad,<br />
+            <strong class="app__title-strong">sumérgete en lo que importa.</strong>
+        </h1>
+        
+        `;
+            break;
+        }
+        case 'descanso-corto': {
+
+            appTitle.innerHTML = `
+
+            <h1 class="app__title">
+                ¿Qué tal tomar un respiro?<br />
+                <strong class="app__title-strong">¡Haz una pausa corta!</strong>
+            </h1>
+            
+            `;
+            break;
+        }
+        case 'descanso-largo': {
+
+            appTitle.innerHTML = `
+
+            <h1 class="app__title">
+                Hora de volver a la superficie.<br />
+                <strong class="app__title-strong">Haz una pausa larga.</strong>
+            </h1>
+            
+            `;
+            break;
+        }
+    }
+
+    /* Background de los botones de descanso */
+    if (contexto === 'enfoque') {
+
+        appButtonEnfoque.classList.add('active');
+        appButtonCorto.classList.remove('active');
+        btnLargo.classList.remove('active');
+        
+
+    } else if (contexto === 'descanso-corto') {
+
+
+        appButtonCorto.classList.add('active');
+        appButtonLargo.classList.remove('active');
+        appButtonEnfoque.classList.remove('active');
+
+    } else if (contexto === 'descanso-largo') {
+
+        appButtonLargo.classList.add('active');
+        appButtonEnfoque.classList.remove('active');
+        appButtonCorto.classList.remove('active');
+    
+    }
+
+
+
+}
+
+const cuentaRegresiva = () => {
+
+   
+    if (tiempoTranscurrido <= 0) {
+
+        audioStop.play();
+        reiniciar(); 
+        return;
+
+    }
+    
+
+    
+
+    tiempoTranscurrido -= 1;
+    tiempoEnPantalla();
+    
+}
+
+
+
+startPauseBtn.addEventListener('click', () => {
+
+    iniciarPausar();
+
+});
+
+
+const iniciarPausar = () => {
+
+    if (idIntervalo) { 
+
+        
+        audioPausa.play();
+        reiniciar();
+        return;
+    }
+
+    
+    audioPlay.play();
+    idIntervalo = setInterval(cuentaRegresiva, 1000);
+    textoInicioPausa.textContent = 'Pausar';
+    playPauseImg.setAttribute('src', './imagenes/pause.png');
+    
+}
+
+const reiniciar = () => {
+
+    clearInterval(idIntervalo);
+    textoInicioPausa.textContent = 'Comenzar';
+    playPauseImg.setAttribute('src', './imagenes/play_arrow.png');
+    idIntervalo = null;
+
+}
+
+const tiempoEnPantalla = () => {
+
+    const tiempo = new Date(tiempoTranscurrido * 1000);
+    const formatoMinutosSegundos = tiempo.toLocaleTimeString('es-MX', {minute: '2-digit', second: '2-digit'});
+    timer.innerHTML = `${formatoMinutosSegundos}`;
+
+}
+
+tiempoEnPantalla();
